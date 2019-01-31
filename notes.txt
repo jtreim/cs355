@@ -1,0 +1,258 @@
+SD: 720 x 576
+HD: 1280 x 720
+Full HD: 1920 x 1080
+Quad HD: 3840 x 2160
+4K/2K: 4096 x 2160
+
+____Interlacing________
+Progressive: full screen 60 fps
+Interlaced: 
+    Half screen fields 60 times/second. (Odd lines, then even lines...). Equivalent of 30 fps.
+
+____Rasterization________
+- Vector graphics are higher quality, but everyone uses raster displays.
+- Converting to raster image first: called rasterization (sometimes scan conversion).
+
+Postscript: When sending to printer, we send a program of how to draw a page, not the actual image.
+
+Alpha channel included in the last byte per pixel. (0 = transparent, 255 opaque).
+
+____Handling Buffers________
+Single buffer: Erase/redraw only what's changed. Uses clipping. Determining what's in that area
+               is usually not worth it. Might lead to flickering, but only in areas being updated.
+Double buffer: Don't really draw to the real screen buffer. Draw to offscreen buffer.
+               Copy buffers (fast). Some systems support switching with just pointers. Most common
+               for games, animations, etc.
+
+In most systems there are lots of layers:
+- Drawing API
+- GUI
+- OS
+- Graphics drivers
+- Graphics cards
+- displays
+
+
+
+________________Level (Point) Operations________________
+General form:
+- r = input value
+- s = output value
+- T = a grey level transformation
+
+for all pixel positions x, y:
+out[x,y] = function(in[x,y])
+
+brightness: s = r + c. c > 0: lighter. c < 0: darker. c: bias/offset.
+contrast: s = a * r. a > 1: more contrast. a < 1: less contrast. a: gain.
+clipping to a limited range:
+    /-- s_min if r < s_min
+s --- s_max if r > s_max
+    \__ r otherwise
+
+Scaling:
+    s = (r - r_min)*(s_max - s_min)/(r_max - r_min) + s_min
+Negative:
+    s = r_max - r
+        or
+    s = r_max - r + r_min
+Quantization:
+    s = s_n if r_n <= r <= r_max
+Logarithm/Exponent:
+    Sometimes care more about relative changes than absolute ones.
+    Lots of things use logarithmic scales (s = log(r)).
+    - Decibel (dB) units
+    - Apparent brightness
+    - Richter scale
+    - Human Vision
+    Can "undo" with exponentiation
+Power Functions: Can also raise to a desired power.
+    s = r^p
+    Used in gamma correction. (I = V^(some constant) + c)
+    
+
+____________Color________________________
+- Cones have 3 different kinds of color-sensitive pigments, each responding to a different
+  range of wavelengths.
+- These are roughly "red", "green", and "blue".
+- The sensitivity and number of the three types of cones are different.
+- More sensitive overall to green and red than to blue.
+- Technically, there is a difference between:
+    -> Physical intensity
+    -> Perceptual brightness
+- Caused by differences in sensitivity of our eyes to different wavelengths.
+- Luminous efficiency function
+
+Color Models:
+- Color is a natural phenomenon, but for graphics and imaging we need to represent colors numerically.
+- Many ways to do this.
+- Numerical representations of color are called color models.
+- Simplest are RGB. Can be thought of as points in a cube.
+- Primaries and secondaries are complementary.
+Primary: ones mixed to make other colors.
+Secondary: Pairwise combinations of primaries.
+- Can be additive or subtractive
+
+Additive: RGB
+Subtractive: CMY(K). K is the "pure black" as the fourth primary.
+
+Color Gamuts:
+- Can visualize the space of all visible colors using a chromaticity diagram.
+- No 3 primaries can span the space of visible colors.
+
+
+________________Luminance and Chromaticity________________________________
+- RGB model is common but not all that intuitive to use.
+- Most common for Chromaticity:
+    -> Luminance: how bright/strong a color is. Equivalent of measuring
+                  quantity of light independent of wavelength. Most
+                  contributes to human perception of shape and form. Same
+                  as "value" in art.
+    -> Hue: What we first think of as "color". Pure wavelength of light.
+    -> Saturation: how pure a color is.
+
+HSI color model:
+    Mapping all colors to a double-ended cone.
+    Angle = hue. Distance from center = saturation. Axis down the middle 
+    is the "line of grays".
+HSV color model:
+    Single ended-cone. Like HSI but only one cone. Hue-Lightness-Saturation,
+    Hue-Value-Chroma both same idea.
+NTSC (National Television Standards Committee) YIQ Model:
+    Chromaticity requires two parameters, but these don't have to be hue
+    and saturation. Lots of other variations.
+    Y = Luminance, I and Q = chromaticity.
+Others:
+    CIE LUV, CIE La*b* (attempts to be perceptually linear), YCrCb (used
+    in JPEG standard).
+
+Color Image Processing:
+- Common approach:
+    -> Convert to an appropriate model such as HSI, etc.
+    -> Process
+        Brightness/contrast adjustments
+        Preserving or shifting the hues
+        Adjusting the saturation
+    -> convert back to RGB if needed.
+
+Gamut: Space of colors spanned by the primaries of the device.
+
+
+________________Image Arithmetic________________________________
+Addition:
+out(x,y) = (alpha1)in1(x,y) + (alpha2)in2(x,y) -- Adding fraction
+                                                  of each to avoid
+                                                  maxed values.
+Subtraction:
+- Useful for finding changes between images
+- Often more useful to use absolute difference.
+- Digital Subtraction Angiography:
+    1. Take an x-ray
+    2. Inject patient with radio-opaque dye ("don't move!")
+    3. Take another x-ray
+    4. Subtract the two.
+- Motion: use differencing to identify motion in an otherwise
+          unchanging scene (object motion, not camera motion)
+          Basis for motion tracking techniques in computer vision.
+          Use overall shift (minimum difference) for tracking
+          camera motion. Part of a larger process called a
+          "match move" in film making. Essential for inserting CGI
+          into a real scene with a moving camera (the virtual camera
+          has to move the same way the physical camera did).
+          Useful for video compression. Only encode the difference
+          between frames. Motion detection/prediction used in video
+          compression (MPEG, etc).
+
+Image averaging:
+- Average multiple pictures of the same static scene to reduce noise.
+- Similar in principle to acquiring the image for a longer duration.
+
+Bitwise And/Or:
+
+Alpha Blending:
+- Use per-pixel weights to blend two images:
+    out(x,y) = (alpha1)(x,y)in1(x,y) + (alpha2)(x,y)in2(x,y)
+    Commonly:
+    out(x,y) = (alpha)(x,y)in1(x,y) + (1- (alpha)(x,y))in2(x,y)
+- Blending often uses an alpha mask (aka matte).
+
+Neighborhood operations:
+- Output pixel value is a function of that pixel and its neighbors.
+- Possible operations: sum, weighted sum, average, weighted average, min, max, median, ...
+           (I(x-1, y-1), I(x, y-1), I(x+1, y-1))
+I'(x,y) = f(I(x-1,y), I(x,y), I(x+1, y))
+           (something else...)
+
+Pixel Grid - Neighbors?
+- 4-connected (N,S,E,W)
+- 8-connected(add NE, SE, SW, NW)
+
+Pixel Grid - Distance:
+- Euclidean distance: Pythagorean theorem.
+- 4-connected steps: "city block", "Manhattan". Sum of differences between x & y.
+- 8 - connected steps: "chessboard". Larger of differences between x & y.
+
+Spatial Filtering:
+- Most common is to multiply each of the pixels in the neighborhood by a
+  respective weight and add them together.
+- Local weights are called a mask or kernel.
+
+- Giving information to neighbors: Correlation.
+- Getting information from neighbors: Convolution. Basically the same, but flipped mask.
+
+Notation for convolution operator: I' = I * w
+                                          ^
+                                        Not multiplication, convolution.
+What to do when neighbor lies outside the image boundaries?
+ - Be consistent with it, pick what makes sense for operation.
+    - Assume zero or some other constant (average of image).
+    - wrap around.
+    - Don't do edges.
+    - Assume same as its neighbor inside image.
+
+Smoothing:
+- If we can average multiple images together to remove noise, why not average multiple pixels?
+- Assumption - Correct values are all the same.
+- Effects: Reduces noise, causes blurring on edges. Main purpose is to reduce noise.
+- Any kernel with all positive weights does smoothing/blurring.
+- To average rather than add, divide by the sum of the weights.
+- Can be any size (larger means more blurring)
+
+Nonlinear Smoothing:
+- Spatial filtering is linear, byt many neighborhood operators are not.
+- Some do noise reduction;
+    - Trimmed mean
+    - Median filter
+    - Bilateral filtering (or other adaptive weights)
+- These try to be less sensitive to outliers and/or respect edges.
+
+Median filtering:
+- Output is the median (not the mean) of the neighborhood pixels
+- More robust to outliers (great for "salt and pepper" noise)
+- Tries to respect edges (goes with local majority)
+- But often rounds corners or loses very small/thin things
+
+Bilateral Filtering:
+- Spatially adapt the weights of the mask.
+- Idea is to average with neighbors, but respect edges. If it's already similar, average.
+  Otherwise, don't or don't near as much.
+- Close neighbors get more weight.
+- Similar neighbors get more weight.
+- Computationally expensive. Pretty effective at removing noise though.
+
+Negative Weights:
+- Requires a mix of positive and negative weights to do sharpening.
+
+Unsharp Masking:
+- Key idea: mask (subtract) out the blur
+Procedure:
+    - Blur more
+    - Subtract from original
+    - Multiply by some fraction
+    - Add back to the original
+Mathematically: I' = I + (alpha)(I - ~I)
+    - I = input image
+    - ~I = Blurred input image
+    - (alpha) = Weighting (controls sharpening)
+    - I' = Output image
+
