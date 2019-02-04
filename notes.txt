@@ -256,3 +256,27 @@ Mathematically: I' = I + (alpha)(I - ~I)
     - (alpha) = Weighting (controls sharpening)
     - I' = Output image
 
+Normalizing a vector:
+v-hat = v/||v|| = v/sqrt(v_1^2 + v_2^2 + ... + v_n^2)
+0 vector has a length of 0, and an undirected angles.
+
+Geometric Interpretation: the dot product of a vector and a unit vector is the length
+                          of the projection onto that unit vector.
+
+Orthogonality: vectors whose dot product is zero are said to be "orthogonal"
+               "Right angle" to each other (regardless of length)
+
+Dot product between vectors: scalar - single number. Works across all dimensions.
+Cross product between vectors: only done in 3D.
+                               AxB is orthogonal to A & B.
+                               Sometimes get a right-handed coordinate system answer.
+                               Sometimes get a left-handed coordinate system answer.
+
+Translation: p` = p + t (point plus translation vector)
+Rotation: p`_x = p dot ^e_x
+
+Vectors are simply an n x 1 matrix
+Transposing: swap rows for columns.
+A matrix is an n x m array of numbers, or a matrix is a stack of transposed vectors, each with m elements.
+Matrix multiply is simply a lot of dot products in parallel
+
