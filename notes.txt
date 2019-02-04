@@ -280,3 +280,8 @@ Transposing: swap rows for columns.
 A matrix is an n x m array of numbers, or a matrix is a stack of transposed vectors, each with m elements.
 Matrix multiply is simply a lot of dot products in parallel
 
+Column vectors: CBAv = C(B(Av))       Row vectors: vABC = (((vA)B)C)
+
+    Line 1:                          Line 2:
+a_1x + b_1y = d_1               a_2x + b_2y = d_2
+
