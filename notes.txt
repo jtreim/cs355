@@ -285,3 +285,82 @@ Column vectors: CBAv = C(B(Av))       Row vectors: vABC = (((vA)B)C)
     Line 1:                          Line 2:
 a_1x + b_1y = d_1               a_2x + b_2y = d_2
 
+
+- Rank of a matrix is the number of linearly independent rows.
+- When used as transforms, matrices with full rank transform to full space.
+- Singular matricies have insufficient rank and collapse to a corresponding subspace.
+- Geometric interpretation: the rank of a matrix is the dimensionality of the (sub)space that matrix maps to.
+
+- A square matrix are orthogonal iff MM^T = I
+- Implies rows are orthonormal vectors. Implies that M^T == M^-1
+- All rotation matrices are orthogonal and all orthogonal matrices are rotations!
+
+________________________3D Rendering____________________________________________
+Projection: To get 2D pictures of a 3D world, you have to use projection.
+            - Orthographic: Simply dropping a dimension. Used in technical drawings, etc.
+            - Perspective: Many graphics systems assume a simple pinhole camera model.
+
+focal (f)
+length  /
+|  |   /
+V  V  /
+|\   /|<--virtual imaging plane
+| \ / |
+|--X--|----optical axis
+| /^\ |
+|/ | \|
+ focal\
+point  \
+        \
+        field of view
+
+
+Camera Coordinates: Projection
+           P(X, Y, Z)
+      |   / 
+      |  /|    
+focal | / |<--similar triangles: x/f = X/Z -> only determines where it physically falls on the sensor,
+point |------- optical axis                   not where the point should be in terms of pixels.
+      |   |
+      |   |
+      |  virtual imaging plane: imaginary plane to simplify flipping the image.
+(x, y) = (fX/Z, fY/Z)
+
+_a = alpha 
+ [[x],  [[_ax],
+  [y], ~ [_ay],
+  [1]]   [_a]]
+ 
+ [[x],   [[fX/Z],   [[X],    [[1,0,0,0],    [[X],
+  [y], =  [fY/Z], ~  [Y],  =  [0,1,0,0],  *  [Y],
+--[f],----[-f-],-----[Z],-----[0,0,1,0],-----[Z],-- Some formats drop this row.
+  [1]]    [ 1 ]]    [Z/f]]   [0,0,1/f,0]]    [1]]
+
+---Polygons!!---
+Vertex: 3D point (X,Y,Z)
+Edge: Line connecting 2 vertices.
+Face: Polygon defined by a set of "adjacent (connected by edges) vertices.
+
+Storage:
+- List of vertices
+- List of faces bound by vertices (by index)
+- Other information about vertices/faces.
+Avoids duplication.
+
+Example:
+# List of vertices
+v 0.123 0.234 0.345 1.0
+v ...
+
+# List of faces
+f 1 2 3
+f 3 4 5
+f 6 3 7
+
+Normals:
+- It's useful to determine the normal to the polygonal face.
+ -> Visibility
+ -> Lighting
+ -> ...
+- Be consistent--usually go with outward facing.
+
