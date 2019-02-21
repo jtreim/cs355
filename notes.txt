@@ -364,3 +364,67 @@ Normals:
  -> ...
 - Be consistent--usually go with outward facing.
 
+
+World space defines the space in which objects can live. Origin and coordinate system is arbitrary.
+Object space: Coordinate system used to define an object. Usually chosen to make object definition
+              the simplest.
+Placing an object in the world defines an object-to-world transformation.
+Order of operations: 1. Scale
+                     2. Rotate
+                     3. Translate
+World to Camera: 1. Translate everything relative to the camera position.
+                 2. Rotate into the camera's viewing orientation.
+
+[[x],   [[X_c],    [[1,0,0,0],    [[e_11,e_12,e_13,0],   [[1,0,0,-c_x],   [[X_w],
+ [y], ~  [Y_c],  =  [0,1,0,0],  *  [e_21,e_22,e_23,0], *  [0,1,0,-c_y], *  [Y_w],
+ [f],    [Z_c],     [0,0,1,0],     [e_31,e_32,e_33,0],    [0,0,1,-c_z],    [Z_w],
+ [1]]   [Z_c/f]]   [0,0,1/f,0]]        [0,0,0,1]]         [0,0,0,1]]        [1]]
+
+Field of View: Spend as little time as possible on things that are outside the field of view.
+
+Near & Far planes: don't render things that are too small to be viewable.
+
+
+OpenGL key matrices:
+- ModelView (converts from model coordinates to camera ones)
+    -> Object to world
+    -> World to view
+- Projection
+    -> Orthographic
+    -> Perspective
+- Viewport                      -------------- Model View ----------------- 
+                                |                                         |
+3D Geometry Pipeline:           v                                         v
+Object Coordinates ---> Object to World ---> World Coordinates ---> World to Camera --->
+Camera Coordinates ---> Perspective Projection (Projection) ---> Imaging Plane Coordinates --->
+Viewport Mapping (Viewport) ---> Screen Coordinates
+
+glMatrixMode: Changes which matrix you're manipulating
+glLoadIdentity: Loads the identity matrix as the current one.
+glRotated: Concatenates a rotation matrix to the current one.
+glTranslated: Concatenates a translation matrix to the current one.
+glOrtho: loads an orthographic projection matrix.
+gluPerspective: loads a perspective projection matrix.
+
+M = RT:
+M <- I
+M <- T
+M <- R
+
+Object Hierarchies:
+            Sun
+           /   \
+        Earth  Mars
+        /      /  \
+     Moon  Phobos Deimos
+Mars <- Earth: Earth relative to sun matrix * mars relative to sun inverse matrix
+
+                            World
+                              |
+                            Campus
+                     ______/  |  \_______
+                Building    Building    Building
+                              |
+                            Room
+                          /  |   \
+                     Chair  Chair  Chair
