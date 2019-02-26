@@ -424,7 +424,9 @@ Mars <- Earth: Earth relative to sun matrix * mars relative to sun inverse matri
                             Campus
                      ______/  |  \_______
                 Building    Building    Building
-                              |
-                            Room
-                          /  |   \
+                      _____/  |   \____
+                    Room   __Room_     Room
+                          /   |   \
                      Chair  Chair  Chair
+
+
