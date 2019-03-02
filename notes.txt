@@ -430,3 +430,10 @@ Mars <- Earth: Earth relative to sun matrix * mars relative to sun inverse matri
                      Chair  Chair  Chair
 
 
+3 common ways to do Occlusion Testing:
+    1. Ordered rendering (painter's algorithm):
+        Render from back to front. Draw things over top of others. Problem: Polygon depth isn't
+        strictly ordered. Interpenetration. Mutually overlapping.
+    2. Image space testing (Z-buffering): Only override pixels if closer to camera than what's
+        already there. Problem: How to handle ties?
+    3.
