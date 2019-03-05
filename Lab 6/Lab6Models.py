@@ -94,9 +94,9 @@ tires = [VirtualObject(2.0, 0.0, 2.0, 0, 0), VirtualObject(-2.0, 0.0, 2.0, 0, 0)
 def updateCar(tire_rotate_z):
 	for tire in tires:
 		tire.rotate_z += tire_rotate_z
-	car.x += .2
+	car.x += .05
 	glutPostRedisplay()
-	glutTimerFunc(100, updateCar, -5)
+	glutTimerFunc(10, updateCar, -2)
 
 def init(): 
     glClearColor (0.0, 0.0, 0.0, 0.0)

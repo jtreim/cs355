@@ -435,5 +435,48 @@ Mars <- Earth: Earth relative to sun matrix * mars relative to sun inverse matri
         Render from back to front. Draw things over top of others. Problem: Polygon depth isn't
         strictly ordered. Interpenetration. Mutually overlapping.
     2. Image space testing (Z-buffering): Only override pixels if closer to camera than what's
-        already there. Problem: How to handle ties?
-    3.
+        already there. Problems: How to handle ties? Quantization of the finite-precision z buffer.
+        Round-off error may be an issue. Nonlinear by depth.
+    3. Ray Casting: Shoot a ray out from the camera's focal point through the pixel location.
+        What does it hit first? Lots of ray-primitive intersection tests.
+
+
+
+____________________________Lighting & Shading________________________________________________
+Kinds of Lighting:
+ - Direct: Light falling on an object directly from a light source.
+ - Indirect: Light falling on an object after being reflected off (or going through) other objects.
+ - Ambient: General light bouncing around and scattered enough to be effectively "everywhere".
+
+Light Sources:
+ - Point
+ - Area
+ - Spot
+ - etc.
+
+Basic Geometry of Lighting:
+ - Perpendicular to surface: Surface normal (n)
+ - Lighting direction (to the light): l
+ - Viewing direction: Viewing direction to the eye/camera (v)
+ - Reflected light direction (r)
+
+Surface Reflectance:
+ - Most objects don't give off light.
+   -> Reflect some of the light that falls on them
+   -> Absorb the rest
+ - The wavelengths relfected give the object its color.
+ - The effect if multiplicative: i.e. "reflects 40% of the green light"
+ - If modeled as RGB, we can also model reflectance as RGB
+ - Reflectance is also sometimes called albedo.
+
+Irradiance:
+ - We sometimes say "the amount of light"
+ - It's really how much light per unit area
+ - This quantity is called the irradiance
+ - Two important properties:
+   -> Irradiance falls off with the square of the distance
+   -> Irradiance is less when falling on a slanted surface.
+ 
+Specular vs Diffuse:
+ - Some light is reflected perfectly (specular)
+ - Some light is scattered (diffuse)
