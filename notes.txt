@@ -480,3 +480,154 @@ Irradiance:
 Specular vs Diffuse:
  - Some light is reflected perfectly (specular)
  - Some light is scattered (diffuse)
+
+Diffuse Reflection:
+ - Light scattered in every direction is called the diffuse part of the reflected light.
+ - A perfectly diffuse surface is called Lambertian (chalk, moon are examples)
+ - Only lighting direction matters
+ - Viewing direction does not
+
+c_diff = (s (X) m_diff)(n dot l)
+ (X) = pointwise multiply RGB
+ c_diff = diffuse reflected color
+ s = source intensity
+ m_diff = material diffuse reflectance
+if n dot l = 1: means surface is pointing right at light
+if n dot l < 0: means surface is pointing away from light. Floor it to 0.
+if n > 0 & n < 1: means surface is towards light, but not directly at it.
+
+Specular Reflections:
+Angle of reflection = Angle of incidence (but may be blurred)
+c_spec = (s (X) m_spec)(v dot r)^m_gls
+ c_spec = specular reflected color
+ s = source intensity
+ m_spec = material specular reflectance
+ m_gls = how glossy the surface is (the higher it is, the less the reflection deviates, meaning
+         it is less diffused light)
+v dot r is also clipped to 0
+
+Computing the reflection direction:
+r + l = lies in surface normal.
+r + l = 2(l dot n)n, so r = 2(l dot n)n - l
+
+
+Phong model: specular lighting + diffuse lighting + ambient lighting. Really good at plastic/polished
+             model.
+Blinn model is similar with slightly different specular
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+Modelling this light by one light source. To model with multiple light sources, just repeat and add.
+
+BRDFs: Phong model is only an approximation
+       Real reflections are not a simple mix of pure diffuse and pure specular
+       Function of both incoming direction and outgoing direction
+       Reflectance isn't constant across the surface
+BRDF (Bi-direction reflectance distribution function): f(x, w_1, w_2, gamma)
+                                                position-^   ^    ^     ^-wavelength
+                                                         in__|    |__out
+
+Shadows:
+ - Point lights cast hard shadows
+ - Area lights cast softer shadows
+ - umbra = area in full shadow
+ - penumbra = area in partial shadow
+
+Simple shadows:
+ - For point lights, shadows are pretty simple.
+ - Do a visibility test from the point of view of the light
+ - Z-buffering can also be used for distance-based falloff
+
+Flat shading:
+ - The entire polygon has the same normal, so it's all colored the same.
+ - Leads to "flat shading"
+
+Gouraud Shading:
+ - Simple idea:
+   -> Compute shading at edges/vertices and interpolate.
+   -> Works well for diffuse
+   -> Doesn't work as well for specular
+Phong Shading:
+ - Key idea:
+   -> Instead of interpolating the shading, interpolate the normals
+   -> Compute shading on a per-pixel basis using interpolated normal
+
+Bump Maps (more commonly called normal mapping):
+ - Texture maps are only reflectance
+ - They don't respond to changes in the lighting ("painted on")
+ - Idea: use a normal map. Essentially define normals of points on the model.
+
+Ray Tracing (Turner Whitted, 1980):
+ - Handles reflections, refractions
+ - Shoot a ray out through the pixel on the imaging plane. When it hits something,
+   recursively shoot more rays:
+     -> Towards light source(s)--direct lighting
+     -> Reflection ray (if applicable)
+     -> Refraction ray (if applicable)
+
+Diffuse interreflections
+Radiosity:
+ - Math involves integrals over all angles of light coming into and off of a surface.
+ - Approximated using importance sampling
+ - Effectively traces lots and lots of rays--compute intensive
+ - Because radiosity involves diffuse light, it is independent of the view.
+
+Forward rendering:
+ - Some phenomena can't be modeled well by going "backward" from the camera.
+ - Some require "forward" rendering of the light from the light source. E.g. "caustics"
+   (Light refracts through some medium, reflects and illuminates som other surface).
+ - forward/hybrid methods:
+   -> Path tracing
+   -> Metropolis light transport
+   -> Photon mapping
+   -> All try to approximate the "rendering equation" (Jim Kajiya, 1986)
+
+Signals as functions:
+ - Digital signals can be thought of as sampled functions
+ - Domains:
+   -> Time (audio)
+   -> Space (images)
+   -> Both (video)
+ - Ranges:
+   -> Changing air pressure (audio)
+   -> Visible light (photographs, video)
+   -> Other properties (X-rays, MRI, range images, etc.)
+
+Sampling vs Quantization:
+ - Sampling: Discretization of the domain (conversion of domain to digital format)
+   -> Samples per unit length, area, etc.
+   -> Often expressed as:
+     -- rate
+     -- spacing
+     -- density
+     -- 600 dots per inch, 44.1 KHz, or 30 frames per second
+ - Quantization: Discretization of range (conversion of range to digital format)
+   -> Levels of precision in each sample
+   -> Usually
+     -- number of levels
+     -- number of bits
+     -- black and white images, 8-bit grey, 16-bit audio
+
+Acquisition Devices:
+ - Aperture <--\
+ - Scanning     |--focusing on these two
+ - Sensor <----/
+ - Quantizer
+ - Output storage medium
+
+Apertures (window through which a device is seeing the world):
+ - Pixels aren't point samples.
+ - Total light over an area of the visible scene.
+ - Controlled by the camera's iris (photographers: F-stop)
+ - Also caused by physical sensor area (pixel's area on the camera's sensor)
+ - Sampling and size of aperture determine resolution.
+   -> Smaller apertures = better resolution
+   -> Larger apertures = worse resolution
+ - Lenses allow a physically larger aperture to act as an effectively smaller one
+
+Resolution: Ability to discern detail
+Measuring Resolution:
+ - One way is to use alternating black/white lines with fixed spacing
+   -> Increase density until you can't see the separate lines.
+     -- Gradually blurs to grey
+     -- Stop when half the original contrast
+   -> Units: line pairs per millimeter
+
