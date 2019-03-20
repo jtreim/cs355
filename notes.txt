@@ -488,10 +488,10 @@ Diffuse Reflection:
  - Viewing direction does not
 
 c_diff = (s (X) m_diff)(n dot l)
- (X) = pointwise multiply RGB
- c_diff = diffuse reflected color
- s = source intensity
- m_diff = material diffuse reflectance
+(X) = pointwise multiply RGB
+c_diff = diffuse reflected color
+s = source intensity
+m_diff = material diffuse reflectance
 if n dot l = 1: means surface is pointing right at light
 if n dot l < 0: means surface is pointing away from light. Floor it to 0.
 if n > 0 & n < 1: means surface is towards light, but not directly at it.
@@ -499,10 +499,10 @@ if n > 0 & n < 1: means surface is towards light, but not directly at it.
 Specular Reflections:
 Angle of reflection = Angle of incidence (but may be blurred)
 c_spec = (s (X) m_spec)(v dot r)^m_gls
- c_spec = specular reflected color
- s = source intensity
- m_spec = material specular reflectance
- m_gls = how glossy the surface is (the higher it is, the less the reflection deviates, meaning
+c_spec = specular reflected color
+s = source intensity
+m_spec = material specular reflectance
+m_gls = how glossy the surface is (the higher it is, the less the reflection deviates, meaning
          it is less diffused light)
 v dot r is also clipped to 0
 

@@ -30,7 +30,12 @@ class WireframeViewer(wf.WireframeGroup):
         self.eyeY = 100
         self.light_color = np.array([1,1,1])
         self.view_vector = np.array([0, 0, -1])        
-        self.light_vector = np.array([0, 0, -1])  
+        self.light_vector = np.array([0.0, 0.0, -1.0])
+        # self.light = np.array([[0.0],[0.0],[-1.0],[1.0]])
+
+        self.rotate_x = 0
+        self.rotate_y = 0
+        self.rotate_z = 0
 
         self.background = (10,10,50)
         self.nodeColour = (250,250,250)
@@ -46,8 +51,8 @@ class WireframeViewer(wf.WireframeGroup):
     def addWireframeGroup(self, wireframe_group):
         # Potential danger of overwriting names
         for name, wireframe in wireframe_group.wireframes.items():
-            self.addWireframe(name, wireframe)
-    
+            self.addWireframe(name, wireframe)              
+
     def display(self):
         self.screen.fill(self.background)
 
@@ -71,22 +76,38 @@ class WireframeViewer(wf.WireframeGroup):
                         #Your lighting code here
                         #Make note of the self.view_vector and self.light_vector 
                         #Use the Phong model
+                        n_l = np.dot(normal, self.light_vector)
+                        if n_l < 0:
+                            light_total = ambient
 
+                        else:
+                            # Diffuse
+                            m_diff = colour * .6
+                            c_diff = np.multiply(self.light_color, m_diff)
+                            n_l = np.clip(n_l, 0, 255)
+                            diffuse = np.multiply(c_diff, n_l)
+                            diffuse = np.clip(diffuse, 0, 255)
 
+                            # Specular
+                            r = 2 * n_l
+                            r = np.multiply(normal, r)
+                            r = np.subtract(r, self.light_vector)
+        
+                            m_spec = colour
+                            c_spec = np.multiply(self.light_color, m_spec)
+                            v_r = np.multiply(self.view_vector, r)
+                            m_gls = 3
+                            v_r = np.power(v_r, m_gls)
+                            specular = np.multiply(c_spec, v_r)
+                            specular = np.clip(specular, 0, 255)
 
+						    #Once you have implemented diffuse and specular lighting, you will want to include them here
+                            light_total = np.add(ambient, diffuse)
+                            light_total = np.add(light_total, specular)
+                            light_total = np.clip(light_total, 0, 255)
 
-
-
-
-
-
-
-
-
-						#Once you have implemented diffuse and specular lighting, you will want to include them here
-                        light_total = ambient
-
-                        pygame.draw.polygon(self.screen, light_total, [(nodes[node][0], nodes[node][1]) for node in face], 0)
+                        pygame.draw.polygon(self.screen, light_total,
+                                            [(nodes[node][0], nodes[node][1]) for node in face], 0)
 
                 if self.displayEdges:
                     for (n1, n2) in wireframe.edges:
@@ -102,7 +123,9 @@ class WireframeViewer(wf.WireframeGroup):
                                 
                                 pygame.draw.aaline(self.screen, colour, (x1, y1), (x2, y2), 1)
                         else:
-                            pygame.draw.aaline(self.screen, colour, (nodes[n1][0], nodes[n1][1]), (nodes[n2][0], nodes[n2][1]), 1)
+                            pygame.draw.aaline(self.screen, colour, 
+                                               (nodes[n1][0], nodes[n1][1]),
+                                               (nodes[n2][0], nodes[n2][1]), 1)
 
             if self.displayNodes:
                 for node in nodes:
@@ -110,20 +133,66 @@ class WireframeViewer(wf.WireframeGroup):
         
         pygame.display.flip()
 
+    def update_light(self):
+        light_matrix = np.matrix([[0],
+                                  [0],
+                                  [-1],
+                                  [1]])
+
+        c_x = math.cos(math.radians(self.rotate_x))
+        s_x = math.sin(math.radians(self.rotate_x))
+        c_y = math.cos(math.radians(self.rotate_y))
+        s_y = math.sin(math.radians(self.rotate_y))
+        c_z = math.cos(math.radians(self.rotate_z))
+        s_z = math.sin(math.radians(self.rotate_z))
+
+        rotate_x_matrix = np.matrix([[1,0,0,0],
+                                     [0,c_x,-s_x,0],
+                                     [0,s_x,c_x,0],
+                                     [0,0,0,1]])
+        rotate_y_matrix = np.matrix([[c_y,0,s_y,0],
+                                     [0,1,0,0],
+                                     [-s_y,0,c_y,0],
+                                     [0,0,0,1]])
+        rotate_z_matrix = np.matrix([[c_z,-s_z,0,0],
+                                     [s_z,c_z,0,0],
+                                     [0,0,1,0],
+                                     [0,0,0,1]])
+
+        rotation = np.matmul(rotate_x_matrix, rotate_z_matrix)
+        rotation = np.matmul(rotation, rotate_y_matrix)
+        result = np.matmul(rotation, light_matrix)
+        self.light_vector[0] = result[0,0]
+        self.light_vector[1] = result[1,0]
+        self.light_vector[2] = result[2,0]
+
+
     def keyEvent(self, key):
         
         #Your code here
         if key == pygame.K_w:
-            print("w is pressed")
+            self.rotate_x -= 10
+            self.update_light()
 
+        if key == pygame.K_s:
+            self.rotate_x += 10
+            self.update_light()
 
+        if key == pygame.K_d:
+            self.rotate_y -= 10
+            self.update_light()
 
-
-
-
-
-
-
+        if key == pygame.K_a:
+            self.rotate_y += 10
+            self.update_light()
+        
+        if key == pygame.K_q:
+            self.rotate_z -= 10
+            self.update_light()
+        
+        if key == pygame.K_e:
+            self.rotate_z += 10
+            self.update_light()
 
 
         return
