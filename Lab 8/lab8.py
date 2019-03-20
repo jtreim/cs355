@@ -31,7 +31,6 @@ class WireframeViewer(wf.WireframeGroup):
         self.light_color = np.array([1,1,1])
         self.view_vector = np.array([0, 0, -1])        
         self.light_vector = np.array([0.0, 0.0, -1.0])
-        # self.light = np.array([[0.0],[0.0],[-1.0],[1.0]])
 
         self.rotate_x = 0
         self.rotate_y = 0
@@ -82,8 +81,8 @@ class WireframeViewer(wf.WireframeGroup):
 
                         else:
                             # Diffuse
-                            m_diff = colour * .6
-                            c_diff = np.multiply(self.light_color, m_diff)
+                            m_diff = colour * .4
+                            c_diff = self.light_color * m_diff
                             n_l = np.clip(n_l, 0, 255)
                             diffuse = np.multiply(c_diff, n_l)
                             diffuse = np.clip(diffuse, 0, 255)
@@ -93,9 +92,9 @@ class WireframeViewer(wf.WireframeGroup):
                             r = np.multiply(normal, r)
                             r = np.subtract(r, self.light_vector)
         
-                            m_spec = colour
-                            c_spec = np.multiply(self.light_color, m_spec)
-                            v_r = np.multiply(self.view_vector, r)
+                            m_spec = colour * .5
+                            c_spec = self.light_color * m_spec
+                            v_r = np.dot(self.view_vector, r)
                             m_gls = 3
                             v_r = np.power(v_r, m_gls)
                             specular = np.multiply(c_spec, v_r)
