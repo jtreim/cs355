@@ -631,3 +631,37 @@ Measuring Resolution:
      -- Stop when half the original contrast
    -> Units: line pairs per millimeter
 
+Sensor
+- Converts light (photons) to chemical and/or electrical response
+- Examples: Silver halide crystals (film); photoreceptors in our eyes (rods, cones);
+            Charge-coupled device (CCD); CMOS arrays.
+
+Bayer Patterns:
+- Most commercial-grade cameras sample only one color per pixel
+- Small colored filter over each sensor element.
+- 16 megapixels = 8 megapixels green, 4 megapixels red, 4 megapixels blue
+- You get interpolated combination
+
+Noise:
+- Unavoidable random fluctuations from "correct" value
+- Can usually be modeled as a statistical distribution with mean at the "correct" value
+- A measured sample will vary from that mean according to the distribution std. dev.
+
+Signal-To-Noise Ratio
+- Measure of how "noise free" a signal is
+- SNR = (mu)/(sigma)
+
+Sources of Noise:           __
+- Quantum nature of light     |
+- Sensor inhomogeneity        |---> May not be random
+- Electrical fluctuations     |
+- "Background" noise        __|  
+
+(sigma)^2 = (mu)
+SNR = (mu)/(mu)^.5 = (mu)^.5
+
+Reducing Shot Noise:
+- The only way to reduce quantum noise is to collect more light
+  - Turn up the source
+  - Larger aperture (tradeoff: more spatial blur)
+  - Collect longer (tradeoff: more temporal blur)
